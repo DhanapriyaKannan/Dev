@@ -1,0 +1,75 @@
+try{
+    if(typeof listener === "undefined")
+    {
+    var parent = document.getElementsByClassName('totals')[0].getElementsByTagName('fieldset')[0];
+    var cloned = document.getElementsByClassName('button-fancy-large')[0].cloneNode(true);
+    cloned.classList.add('clonebtn');
+    parent.appendChild(cloned);
+    document.getElementsByClassName('button-fancy-large')[0].style.display = "none";
+    document.getElementsByClassName('clonebtn')[0].addEventListener('click',listener = function(event)
+        {
+            event.preventDefault();
+            event.stopPropagation();
+            var totdata = [];
+            var size = document.getElementsByClassName('cart-row ').length;
+            for(i=0;i<size;i++){
+                productname = document.getElementsByClassName('cart-row ')[i].getElementsByClassName('name')[0].getElementsByTagName('a')[0].textContent;
+                tempprice = document.getElementsByClassName('cart-row ')[i].getElementsByClassName('price-total')[0].textContent.trim().split('$')[1];
+                productquantity = document.getElementsByClassName('cart-row ')[i].getElementsByClassName('qty')[0].value;
+                if(productquantity>1)
+                {
+                    if(tempprice.length==6)
+                    {
+                        var productprice = (parseFloat(tempprice/productquantity).toFixed(2)).toString();
+                    }
+                    if(tempprice.length>6)
+                    {
+                        var temp =tempprice.replace(',','');
+                        var productprice = (parseFloat(temp/productquantity).toFixed(2)).toString();
+                    }
+                }
+                else
+                {
+                    productprice = tempprice;
+                }
+                var obj =
+                    {
+                        "ProductName":productname,
+                        "ProductCost":productprice,
+                        "ProductSKU": "0",
+                        "ProductCategory": "0",
+                        "ProductQuantity":productquantity,
+                        "ProductTax": "0",
+                        "ProductSubItemsTotal": "0",
+                        "ProductShippingCharges": "0",
+                        "ProductDiscount": "0",
+                        "ProductGrandTotal": "0",
+                        "ProductDeliveryDate": "0"
+                    };
+                totdata.push(obj);
+            }
+            subtot = document.getElementsByClassName('order-subtotal')[0].textContent.trim().split('$')[1];
+            var obj =
+                {
+                    "ProductName":"0",
+                    "ProductCost":"0",
+                    "ProductSKU": "0",
+                    "ProductCategory": "0",
+                    "ProductQuantity":"0",
+                    "ProductTax": "0",
+                    "ProductSubItemsTotal": subtotal,
+                    "ProductShippingCharges": "0",
+                    "ProductDiscount": "0",
+                    "ProductGrandTotal": "0",
+                    "ProductDeliveryDate": "0"
+                };
+            totdata.push(obj);console.log(JSON.stringify(totdata));
+            invokeCSharpAction("CA" + JSON.stringify(totdata));
+        });
+    }
+}
+catch(ex)
+{
+    invokeCSharpAction("ERR|"+window.location.href+"|CartPageJSContent.js|"+ex);
+}
+    
